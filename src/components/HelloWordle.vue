@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, Ref } from 'vue'
-const gameName = ref("Wordle Clone")
+const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref([])
 
 function addOneWord() {
-  userWords.value.push("Hello")
+  userWords.value.push("⠀⠀")
 }
 
 function clearAll() {
@@ -16,11 +16,26 @@ function clearAll() {
   <p>Start your work of {{ gameName }} in this file</p>
   <button @click="addOneWord">Add "Hello"</button>
   <button @click="clearAll">Remove All</button>
-  <ul>
-    <li v-for="(w, pos) in userWords" v-bind:key="pos">{{ w }}</li>
-  </ul>
+  <div>
+  <div id="list">
+    <h v-for="(w, pos) in userWords" v-bind:key="pos">
+      <div id = "listIt"> {{ w }}</div>
+    </h>
+  </div>
+</div>
 </template>
 
 <style scoped>
+  #list {
+    display: inline-grid;
+    grid-template-columns: repeat(5, 1fr);
+    font-size: 100px;
+    grid-gap: 20px;
+  }
+  #listIt {
+    border: 5px solid black;
+    border-style: solid;
+    font-size: 50px;
 
+  }
 </style>
