@@ -1,25 +1,19 @@
 <script setup lang="ts">
 import { ref, Ref } from 'vue'
 const gameName = ref("SnoTay Wordle")
-const userWords: Ref<string[]> = ref([])
+const userWords: Ref<string[]> = ref(["", "", "", "", "",
+                                      "", "", "", "", "",
+                                      "", "", "", "", "",
+                                      "", "", "", "", "",
+                                      "", "", "", "", "",
+                                      "", "", "", "", "",])
 
-function addOneWord() {
-  userWords.value.push("")
-  userWords.value.push("")
-  userWords.value.push("")
-  userWords.value.push("")
-  userWords.value.push("")
-}
-
-function clearAll() {
+function newGame() {
   userWords.value.splice(0)
+  for (let i = 0; i < 30; i++) {
+    userWords.value.push("");
+  }
 }
-
-addOneWord()
-addOneWord()
-addOneWord()
-addOneWord()
-addOneWord()
 
 </script>
 
@@ -28,19 +22,18 @@ addOneWord()
   <div id="grid">
     <p v-for="(w, pos) in userWords" v-bind:key="pos">
       <div id = "cell">
-        <input style = "width: 50px; font-size: 50px; border: 5px solid black;" placeholder="⠀⠀" />
+        <input v-model = "userWords[pos]" style = "text-transform: uppercase; text-align: center; width: 100px; height: 100px; align-self: center; font-size: 100px; border: 5px solid black;" />
       </div>
     </p>
   </div>
   <div id = "buttons">
-    <button @click="clearAll">New Game</button>
-    <button @click="addOneWord">Check</button>
+    <button @click="newGame">New Game</button>
+    <!-- <button @click="addOneWord">Check</button> -->
   </div>
 </template>
 
 <style scoped>
   #grid {
-    /* min-width: 100vh; */
     /* display: grid; */
     /* min-width: 100px; */
     display: inline-grid;
