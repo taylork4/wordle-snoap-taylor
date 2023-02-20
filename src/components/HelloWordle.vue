@@ -21,13 +21,9 @@ function newGame() {
   congrats = false;
   userWords.value.splice(0)
   letterColor.value.splice(0)
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 30; i++) {
     userWords.value.push("");
     letterColor.value.push("");
-  }
-  for (let i = 5; i < 30; i++) {
-    userWords.value.push("X");
-    letterColor.value.push("X");
   }
 }
 
@@ -39,11 +35,13 @@ function checkAnswer() {
       if (userWords.value[i + k] == "") {
         userWords.value[i + k] = "" //Blank cell
       }
-      else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i) && !(tempArray.includes(userWords.value[i + k]))) {
+      else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)
+        && !(tempArray.includes(userWords.value[i + k]))) {
         letterColor.value[i + k] = "G" //correct letter in correct location
         tempArray.push(userWords.value[i + k]);
       }
-      else if (secretWord.includes(userWords.value[i + k].toLowerCase()) && !(tempArray.includes(userWords.value[i + k]))) {
+      else if (secretWord.includes(userWords.value[i + k].toLowerCase())
+        && !(tempArray.includes(userWords.value[i + k]))) {
         letterColor.value[i + k] = "Y" //correct letter wrong spot
         tempArray.push(userWords.value[i + k]);
       }
@@ -98,7 +96,6 @@ function win() {
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
-        
         <input class = "cell" v-if = "letterColor[pos] == ''" v-model = "userWords[pos]"/>
         <input class = "cell" id = "wrong" v-else-if = "letterColor[pos] == 'B'" v-model = "userWords[pos]"/>
         <input class = "cell" id = "right" v-else-if = "letterColor[pos] == 'G'" v-model = "userWords[pos]"/>
