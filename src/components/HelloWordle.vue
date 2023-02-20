@@ -153,12 +153,13 @@ function twoDigitSeconds() {
     </div>
   </h>
   <p>
-    <h v-if="congrats">
+    <h v-if="congrats" style = "color: black;">
       <h1> 🎊 Congratulations! You Win! 🎊 </h1>
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
-    <h v-else-if="gameover">
+    <h v-else-if="gameover" style = "color: black;">
       <h1> 😔 Game Over! No more guesses left! 😔 </h1>
+      <h2> The word was '{{ secretWord }}' </h2>
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
   </p>
