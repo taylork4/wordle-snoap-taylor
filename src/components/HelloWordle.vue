@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 import { ref, Ref } from 'vue'
 
@@ -16,9 +17,39 @@ const letterColor: Ref<string[]> = ref(["", "", "", "", "",
                                       "", "", "", "", ""])
 let checks: number = 0;
 let congrats: boolean = false;
+let gameover: boolean = false;
+
+const words: string[] = [
+  'amber',
+  'brave',
+  'catch',
+  'dream',
+  'earth',
+  'flair',
+  'gloom',
+  'happy',
+  'image',
+  'juice',
+  'knack',
+  'latch',
+  'mirth',
+  'notch',
+  'olive',
+  'peace',
+  'quirk',
+  'route',
+  'shrug',
+  'toast',
+];
+
+let secretWord: string
+secretWord = words[Math.floor(Math.random() * words.length)];
 
 function newGame() {
+  secretWord = words[Math.floor(Math.random() * words.length)];
   congrats = false;
+  gameover = false;
+  checks = 0;
   userWords.value.splice(0)
   letterColor.value.splice(0)
   for (let i = 0; i < 30; i++) {
@@ -28,48 +59,57 @@ function newGame() {
 }
 
 function checkAnswer() {
-  const secretWord = "dolly" //test word
-  let tempArray: Array<string> = [];
+  // const secretWord = "dolly" //test word
   for (let k = 0; k <= 25; k += 5) {
     for (let i = 0; i < 5; i++) {
       if (userWords.value[i + k] == "") {
         userWords.value[i + k] = "" //Blank cell
-      }
-      else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)
-        && !(tempArray.includes(userWords.value[i + k]))) {
+      } else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)) {
         letterColor.value[i + k] = "G" //correct letter in correct location
-        tempArray.push(userWords.value[i + k]);
-      }
-      else if (secretWord.includes(userWords.value[i + k].toLowerCase())
-        && !(tempArray.includes(userWords.value[i + k]))) {
+      } else if (secretWord.includes(userWords.value[i + k].toLowerCase())){
         letterColor.value[i + k] = "Y" //correct letter wrong spot
-        tempArray.push(userWords.value[i + k]);
-      }
-      else {
+      } else {
         letterColor.value[i + k] = "B" //wrong letter
       }
     }
-    tempArray.splice(0)
   }
   checkWin()
+  checks += 1;
+  if (checks == 6 && !congrats) {
+    gameover = true;
+  }
 }
 
+
+
 // function checkAnswer() {
-//   const secretWord = "dolly" //test word
+//   // const secretWord = "dolly" //test word
+//   let tempArray: Array<string> = [];
 //   for (let k = 0; k <= 25; k += 5) {
 //     for (let i = 0; i < 5; i++) {
 //       if (userWords.value[i + k] == "") {
 //         userWords.value[i + k] = "" //Blank cell
-//       } else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)) {
+//       }
+//       else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i) && !(tempArray.includes(userWords.value[i + k]))) {
 //         letterColor.value[i + k] = "G" //correct letter in correct location
-//       } else if (secretWord.includes(userWords.value[i + k].toLowerCase())){
+//         tempArray.push(userWords.value[i + k]);
+//       }
+//       else if (secretWord.includes(userWords.value[i + k].toLowerCase())
+//         && !(tempArray.includes(userWords.value[i + k]))) {
 //         letterColor.value[i + k] = "Y" //correct letter wrong spot
-//       } else {
+//         tempArray.push(userWords.value[i + k]);
+//       }
+//       else {
 //         letterColor.value[i + k] = "B" //wrong letter
 //       }
 //     }
+//     tempArray.splice(0)
 //   }
 //   checkWin()
+//   checks += 1;
+//   if (checks == 6 && !congrats) {
+//     gameover = true;
+//   }
 // }
 
 function checkWin() {
@@ -103,13 +143,19 @@ function win() {
       </p>
     </div>
   </h>
-  <h v-if = "congrats">
-    <h1 > 🎊 Congratulations! You Win! 🎊 </h1>
-    <h2> Tap the 'New Game' button to play again! </h2>
-  </h>
+  <p>
+    <h v-if = "congrats">
+      <h1 > 🎊 Congratulations! You Win! 🎊 </h1>
+      <h2> Tap the 'New Game' button to play again! </h2>
+    </h>
+    <h v-else-if = "gameover">
+      <h1 > 😔 Game Over! No more guesses left! 😔 </h1>
+      <h2> Tap the 'New Game' button to play again! </h2>
+    </h>
+  </p>
   <div class = "buttons">
     <button @click="newGame"> New Game </button>
-    <button v-if = "!congrats" @click="checkAnswer"> Check Answer </button>
+    <button v-if = "!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
   </div>
 </template>
 
