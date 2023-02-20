@@ -3,46 +3,15 @@
 import { ref, Ref } from 'vue'
 
 const gameName = ref("SnoTay Wordle")
-const userWords: Ref<string[]> = ref(["", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", ""])
-const letterColor: Ref<string[]> = ref(["", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", "",
-                                      "", "", "", "", ""])
+const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
 let checks: number = 0;
 let congrats: boolean = false;
 let gameover: boolean = false;
-
-const words: string[] = [
-  'amber',
-  'brave',
-  'catch',
-  'dream',
-  'earth',
-  'flair',
-  'gloom',
-  'happy',
-  'image',
-  'juice',
-  'knack',
-  'latch',
-  'mirth',
-  'notch',
-  'olive',
-  'peace',
-  'quirk',
-  'route',
-  'shrug',
-  'toast',
-];
-
 let secretWord: string
+
+
 secretWord = words[Math.floor(Math.random() * words.length)];
 
 function newGame() {
@@ -60,19 +29,40 @@ function newGame() {
 
 function checkAnswer() {
   // const secretWord = "dolly" //test word
-  for (let k = 0; k <= 25; k += 5) {
-    for (let i = 0; i < 5; i++) {
-      if (userWords.value[i + k] == "") {
-        userWords.value[i + k] = "" //Blank cell
-      } else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)) {
-        letterColor.value[i + k] = "G" //correct letter in correct location
-      } else if (secretWord.includes(userWords.value[i + k].toLowerCase())){
-        letterColor.value[i + k] = "Y" //correct letter wrong spot
-      } else {
-        letterColor.value[i + k] = "B" //wrong letter
+  const cellLoc = 5 * checks;
+  let index = -1;
+  let tempArray: Array<string> = [];
+
+  for (let i = 0; i < 5; i++) {
+    if (userWords.value[i + cellLoc] == "") {
+      return;
+    } 
+    tempArray.push(secretWord.charAt(i));
+  }
+  for (let i = 0; i < 5; i++) {
+    if (userWords.value[i + cellLoc].toLowerCase() == secretWord.charAt(i) && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
+      letterColor.value[i + cellLoc] = "G" //correct letter in correct location
+      //Logic to check for duplicate letters in a word
+      for (let j = 0; j < 5; j++) {
+        if (tempArray[j] == userWords.value[i + cellLoc].toLowerCase()) {
+          tempArray.splice(j, 1);
+          break;
+        }
       }
+    } else if (secretWord.charAt(i) != userWords.value[i + cellLoc] && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
+      letterColor.value[i + cellLoc] = "Y" //correct letter wrong spot
+      //Logic to check for duplicate letters in a word
+      for (let j = 0; j < 5; j++) {
+        if (tempArray[j] == userWords.value[i + cellLoc].toLowerCase()) {
+          tempArray.splice(j, 1);
+          break;
+        }
+      }
+    } else {
+      letterColor.value[i + cellLoc] = "B" //wrong letter
     }
   }
+
   checkWin()
   checks += 1;
   if (checks == 6 && !congrats) {
@@ -80,37 +70,6 @@ function checkAnswer() {
   }
 }
 
-
-
-// function checkAnswer() {
-//   // const secretWord = "dolly" //test word
-//   let tempArray: Array<string> = [];
-//   for (let k = 0; k <= 25; k += 5) {
-//     for (let i = 0; i < 5; i++) {
-//       if (userWords.value[i + k] == "") {
-//         userWords.value[i + k] = "" //Blank cell
-//       }
-//       else if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i) && !(tempArray.includes(userWords.value[i + k]))) {
-//         letterColor.value[i + k] = "G" //correct letter in correct location
-//         tempArray.push(userWords.value[i + k]);
-//       }
-//       else if (secretWord.includes(userWords.value[i + k].toLowerCase())
-//         && !(tempArray.includes(userWords.value[i + k]))) {
-//         letterColor.value[i + k] = "Y" //correct letter wrong spot
-//         tempArray.push(userWords.value[i + k]);
-//       }
-//       else {
-//         letterColor.value[i + k] = "B" //wrong letter
-//       }
-//     }
-//     tempArray.splice(0)
-//   }
-//   checkWin()
-//   checks += 1;
-//   if (checks == 6 && !congrats) {
-//     gameover = true;
-//   }
-// }
 
 function checkWin() {
   let numFound = 0;
