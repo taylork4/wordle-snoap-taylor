@@ -1,14 +1,27 @@
 
 <script setup lang="ts">
-import { ref, Ref } from 'vue'
-import Timer from "./Timer.vue" //timer
-
-const num = ref(1) //timer
+import {ref, defineProps, computed, withDefaults, Ref} from "vue"
 
 const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
+type TimerProp = {
+      updateInterval: number,
+      startLabel: string,
+      faceColor: string
+    }
+    const props = withDefaults(defineProps<TimerProp>(),
+        {
+           updateInterval: 1000,
+           startLabel: "Start",
+           faceColor: "transparent"
+        })
+    const seconds = ref(0)
+    const minutes = ref(0)
+    let myTimer: Ref<number | null> = ref(null)
+    
+const num = ref(1) //timer
 let checks: number = 0;
 let congrats: boolean = false;
 let gameover: boolean = false;
@@ -16,12 +29,14 @@ let secretWord: string
 
 
 secretWord = words[Math.floor(Math.random() * words.length)];
-
+runTimer();
 function newGame() {
   secretWord = words[Math.floor(Math.random() * words.length)];
   congrats = false;
   gameover = false;
   checks = 0;
+  seconds.value = 0;
+  minutes.value = 0;
   userWords.value.splice(0)
   letterColor.value.splice(0)
   for (let i = 0; i < 30; i++) {
@@ -70,6 +85,7 @@ function checkAnswer() {
   checks += 1;
   if (checks == 6 && !congrats) {
     gameover = true;
+    pauseTimer();
   }
 }
 
@@ -90,15 +106,42 @@ function checkWin() {
 
 function win() {
   congrats = true;
+  pauseTimer();
 }
+
+function twoDigitSeconds() {
+      return seconds.value.toLocaleString('en-US', { minimumIntegerDigits: 2})
+    }
+    function updateTime() {
+      seconds.value++;
+      if (seconds.value === 60) {
+        minutes.value++
+        seconds.value = 0
+      }
+    }
+  
+    function runTimer() {
+      // Update the time once every second (1000 milliseconds)
+      myTimer.value = setInterval(updateTime, props.updateInterval)
+    }
+
+    // pauseTimer();
+    function pauseTimer() {
+      if (myTimer.value !== null) {
+         clearInterval(myTimer.value)
+         myTimer.value = null
+      }
+    }
+    
+    const customStyle = computed(() => {
+      return {
+        backgroundColor: props.faceColor,
+      }
+    })
 
 </script>
 
 <template>
-  <div style="margin-right: 100%;" id="timers">
-    <Timer class="tmr" start-label="Go"></Timer>
-  </div>
-
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
@@ -119,38 +162,50 @@ function win() {
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
   </p>
+  <div id="timers">
+    <div id="timer" :style="customStyle">
+      <div id="timedisplay">
+        {{minutes}}:{{twoDigitSeconds()}}
+      </div>
+    </div>
+  </div>
+  <br>
   <div class="buttons">
     <button @click="newGame"> New Game </button>
     <button v-if="!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
   </div>
-  <h5>
-    Our word matching function first checks that the user has entered a
-    complete five-letter word. Then it creates a temporary array with the
-    letters of the secret word to check for duplicate letters in the user's
-    word.
-    It then loops through each letter in the user's word and compares it to
-    the corresponding letter in the secret word. If the letters match and
-    the letter is in the correct position, it assigns the "G" color code.
-    If the letters match but are in the wrong position, it assigns the "Y"
-    color code. If the letters do not match, it assigns the "B" color code.
-    If the user's word contains a letter that is in the secret word, the function
-    removes that letter from the temporary array to avoid counting it twice in
-    the color codes.
-  </h5>
-  <h5>
-    In this Vue3 template, a grid of input cells is displayed using an
-    inline-grid layout with six rows and five columns. The "v-for" directive
-    is used to iterate through the "userWords" array and display an input
-    field for each element. The "v-model" directive is used to bind the
-    input field to the corresponding element of the "userWords" array.
+  <br>
+  <div class = "report">
+    <h style = "font-size: 100px;"> <b>Report:</b> </h>
+    <h5>
+      Our word matching function first checks that the user has entered a
+      complete five-letter word. Then it creates a temporary array with the
+      letters of the secret word to check for duplicate letters in the user's
+      word.
+      It then loops through each letter in the user's word and compares it to
+      the corresponding letter in the secret word. If the letters match and
+      the letter is in the correct position, it assigns the "G" color code.
+      If the letters match but are in the wrong position, it assigns the "Y"
+      color code. If the letters do not match, it assigns the "B" color code.
+      If the user's word contains a letter that is in the secret word, the function
+      removes that letter from the temporary array to avoid counting it twice in
+      the color codes.
+    </h5>
+    <h5>
+      In this Vue3 template, a grid of input cells is displayed using an
+      inline-grid layout with six rows and five columns. The "v-for" directive
+      is used to iterate through the "userWords" array and display an input
+      field for each element. The "v-model" directive is used to bind the
+      input field to the corresponding element of the "userWords" array.
 
-    Conditional rendering is used to change the background color of the
-    input field based on the value of the "letterColor" array. Four different
-    classes are defined in the "style" section, each with a different background
-    color: black for the default cell, grey for a wrong letter, green for a
-    correct letter in the right spot, and yellow for a correct letter in the
-    wrong spot.
-  </h5>
+      Conditional rendering is used to change the background color of the
+      input field based on the value of the "letterColor" array. Four different
+      classes are defined in the "style" section, each with a different background
+      color: black for the default cell, grey for a wrong letter, green for a
+      correct letter in the right spot, and yellow for a correct letter in the
+      wrong spot.
+    </h5>
+  </div>
 </template>  
 
 <style scoped> #grid {
@@ -167,9 +222,17 @@ function win() {
    height: 100px;
    align-self: center;
    font-size: 100px;
-   border: 5px solid rgb(133, 237, 255);
-   color: white;
-   background-color: black;
+   border: 5px solid black;
+   color: black;
+   background-color: white;
+ }
+ 
+ .report {
+  background-color: darkseagreen;
+  padding: 7px;
+  font-size: 20px;
+  border: 5px dashed black;
+  color: black;
  }
 
  #wrong {
@@ -193,4 +256,17 @@ function win() {
    /* display: grid-template-rows; */
    /* padding: 20px; */
  }
+ 
+ #timer {
+      display: inline-block;
+      border: 5px solid brown;
+      border-radius: 8px;
+      width: 120px;
+      text-align:center;
+      padding-bottom: 3px;
+      color: black;
+    }
+    #timedisplay {
+      font-size: 280%;
+    }
 </style>

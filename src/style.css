@@ -14,6 +14,7 @@
 
   -webkit-text-size-adjust: 100%;
   display: inline-grid;
+  background-color: rgb(231, 139, 41);
 }
 
 a {
