@@ -16,8 +16,21 @@ function newGame() {
 }
 
 function checkAnswer() {
-  const secretWord = "ALPIN" //test word
-  { } //pass
+  const secretWord = "alpin" //test word
+  for (let k = 0; k <= 25; k+=5) {
+    for (let i = 0; i < 5; i++) {
+      if (userWords.value[i + k].toLowerCase() == secretWord.charAt(i)) {
+        userWords.value[i + k] = "G"; //correct letter in correct location
+      }
+      else if(secretWord.includes(userWords.value[i + k])){
+        userWords.value[i + k] = "Y"; //correct letter wrong spot
+      }
+      else {
+        userWords.value[i + k] = "B"; //wrong letter
+      }
+
+    }
+  }
 }
 
 </script>
