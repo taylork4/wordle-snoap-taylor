@@ -4,11 +4,11 @@ const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref([])
 
 function addOneWord() {
-  userWords.value.push("⠀⠀")
-  userWords.value.push("⠀⠀")
-  userWords.value.push("⠀⠀")
-  userWords.value.push("⠀⠀")
-  userWords.value.push("⠀⠀")
+  userWords.value.push("")
+  userWords.value.push("")
+  userWords.value.push("")
+  userWords.value.push("")
+  userWords.value.push("")
 }
 
 function clearAll() {
@@ -26,11 +26,11 @@ addOneWord()
 <template>
   <p>Start your work of {{ gameName }} in this file</p>
   <div id="grid">
-    <h v-for="(w, pos) in userWords" v-bind:key="pos">
+    <p v-for="(w, pos) in userWords" v-bind:key="pos">
       <div id = "cell">
-        <input style = "font-size: 50px; border: 5px solid black;" placeholder="⠀⠀" />
+        <input style = "width: 50px; font-size: 50px; border: 5px solid black;" placeholder="⠀⠀" />
       </div>
-    </h>
+    </p>
   </div>
   <div id = "buttons">
     <button @click="clearAll">New Game</button>
@@ -46,16 +46,17 @@ addOneWord()
     display: inline-grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(6, 1fr);  
-    grid-gap: px;
+    grid-gap: 8px;
     
     /* display: inline-grid;
     grid-template-columns: repeat(5, 1fr);
     font-size: 100px;
     grid-gap: 20px; */
+    /* width: 0em; */
   }
 
   #cell {
-
+    /* width: 50px;  */
     /* font-size: 1em; */
     /* font-weight: 500; */
     
