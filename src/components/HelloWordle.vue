@@ -1,6 +1,9 @@
 
 <script setup lang="ts">
 import { ref, Ref } from 'vue'
+import Timer from "./Timer.vue" //timer
+
+const num = ref(1) //timer
 
 const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
@@ -36,7 +39,7 @@ function checkAnswer() {
   for (let i = 0; i < 5; i++) {
     if (userWords.value[i + cellLoc] == "") {
       return;
-    } 
+    }
     tempArray.push(secretWord.charAt(i));
   }
   for (let i = 0; i < 5; i++) {
@@ -92,72 +95,102 @@ function win() {
 </script>
 
 <template>
+  <div style="margin-right: 100%;" id="timers">
+    <Timer class="tmr" start-label="Go"></Timer>
+  </div>
+
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
-        <input class = "cell" v-if = "letterColor[pos] == ''" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "wrong" v-else-if = "letterColor[pos] == 'B'" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "right" v-else-if = "letterColor[pos] == 'G'" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "misplaced" v-else-if = "letterColor[pos] == 'Y'" v-model = "userWords[pos]"/>
+        <input class="cell" v-if="letterColor[pos] == ''" v-model="userWords[pos]" />
+        <input class="cell" id="wrong" v-else-if="letterColor[pos] == 'B'" v-model="userWords[pos]" />
+        <input class="cell" id="right" v-else-if="letterColor[pos] == 'G'" v-model="userWords[pos]" />
+        <input class="cell" id="misplaced" v-else-if="letterColor[pos] == 'Y'" v-model="userWords[pos]" />
       </p>
     </div>
   </h>
   <p>
-    <h v-if = "congrats">
-      <h1 > 🎊 Congratulations! You Win! 🎊 </h1>
+    <h v-if="congrats">
+      <h1> 🎊 Congratulations! You Win! 🎊 </h1>
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
-    <h v-else-if = "gameover">
-      <h1 > 😔 Game Over! No more guesses left! 😔 </h1>
+    <h v-else-if="gameover">
+      <h1> 😔 Game Over! No more guesses left! 😔 </h1>
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
   </p>
-  <div class = "buttons">
+  <div class="buttons">
     <button @click="newGame"> New Game </button>
-    <button v-if = "!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
+    <button v-if="!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
   </div>
-</template>
+  <h5>
+    Our word matching function first checks that the user has entered a
+    complete five-letter word. Then it creates a temporary array with the
+    letters of the secret word to check for duplicate letters in the user's
+    word.
+    It then loops through each letter in the user's word and compares it to
+    the corresponding letter in the secret word. If the letters match and
+    the letter is in the correct position, it assigns the "G" color code.
+    If the letters match but are in the wrong position, it assigns the "Y"
+    color code. If the letters do not match, it assigns the "B" color code.
+    If the user's word contains a letter that is in the secret word, the function
+    removes that letter from the temporary array to avoid counting it twice in
+    the color codes.
+  </h5>
+  <h5>
+    In this Vue3 template, a grid of input cells is displayed using an
+    inline-grid layout with six rows and five columns. The "v-for" directive
+    is used to iterate through the "userWords" array and display an input
+    field for each element. The "v-model" directive is used to bind the
+    input field to the corresponding element of the "userWords" array.
 
-<style scoped> 
+    Conditional rendering is used to change the background color of the
+    input field based on the value of the "letterColor" array. Four different
+    classes are defined in the "style" section, each with a different background
+    color: black for the default cell, grey for a wrong letter, green for a
+    correct letter in the right spot, and yellow for a correct letter in the
+    wrong spot.
+  </h5>
+</template>  
 
-  #grid {
-    display: inline-grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    grid-gap: 8px;
-  }
+<style scoped> #grid {
+   display: inline-grid;
+   grid-template-columns: repeat(5, 1fr);
+   grid-template-rows: repeat(6, 1fr);
+   grid-gap: 8px;
+ }
 
-  .cell {
-    text-transform: uppercase;
-    text-align: center;
-    width: 100px;
-    height: 100px;
-    align-self: center;
-    font-size: 100px;
-    border: 5px solid rgb(133, 237, 255);
-    color: white;
-    background-color: black;
-  }
+ .cell {
+   text-transform: uppercase;
+   text-align: center;
+   width: 100px;
+   height: 100px;
+   align-self: center;
+   font-size: 100px;
+   border: 5px solid rgb(133, 237, 255);
+   color: white;
+   background-color: black;
+ }
 
-  #wrong {
-    background-color: grey;
-  }
+ #wrong {
+   background-color: grey;
+ }
 
-  #right {
-    background-color: green;
-  }
+ #right {
+   background-color: green;
+ }
 
-  #misplaced {
-    background-color: rgb(186, 186, 3);
-  }
+ #misplaced {
+   background-color: rgb(186, 186, 3);
+ }
 
-  .buttons {
-    /* width: auto; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-gap: 8px;
-    /* display: grid-template-rows; */
-    /* padding: 20px; */
-  }
+ .buttons {
+   /* width: auto; */
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   grid-gap: 8px;
+   /* display: grid-template-rows; */
+   /* padding: 20px; */
+ }
 </style>
