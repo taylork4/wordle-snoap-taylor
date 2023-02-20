@@ -14,8 +14,8 @@ const letterColor: Ref<string[]> = ref(["", "", "", "", "",
                                       "", "", "", "", "",
                                       "", "", "", "", "",
                                       "", "", "", "", ""])
-let checks: number = 0
-let checksShow: boolean = true
+let checks: number = 0;
+let congrats: boolean = false;
 
 function newGame() {
   userWords.value.splice(0)
@@ -24,6 +24,7 @@ function newGame() {
     userWords.value.push("");
     letterColor.value.push("");
   }
+  congrats = false;
 }
 
 function checkAnswer() {
@@ -40,7 +41,26 @@ function checkAnswer() {
         letterColor.value[i + k] = "B" //wrong letter
       }
     }
-  } 
+  }
+  checkWin()
+}
+
+function checkWin() {
+  let numFound = 0;
+  for (let i = 0; i < 30; i++) {
+    if (letterColor.value[i] == "G") {
+      numFound++;
+    }
+    if (numFound == 5) {
+      win();
+    } else if ((i + 1) % 5 == 0) {
+      numFound = 0;
+    }
+  }
+}
+
+function win() {
+  congrats = true;
 }
 
 </script>
@@ -49,20 +69,17 @@ function checkAnswer() {
   <p>Start your work of {{ gameName }} in this file</p>
   <div id="grid">
     <p v-for="(w, pos) in userWords" v-bind:key="pos">
-      <!-- <input id = "cS1" v-show ="checksShow == true" v-model = "userWords[pos]"/>
-      <input id = "cS2" v-show ="checksShow == false" v-model = "userWords[pos]"/> -->
-
-        <!-- <input id = "cS2" v-if="checks == 1" v-model = "userWords[pos]"/> -->
-        <input class = "cell" v-if="letterColor[pos] == ''" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "wrong" v-else-if="letterColor[pos] == 'B'" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "right" v-else-if="letterColor[pos] == 'G'" v-model = "userWords[pos]"/>
-        <input class = "cell" id = "misplaced" v-else-if="letterColor[pos] == 'Y'" v-model = "userWords[pos]"/>
+        <input class = "cell" v-if = "letterColor[pos] == ''" v-model = "userWords[pos]"/>
+        <input class = "cell" id = "wrong" v-else-if = "letterColor[pos] == 'B'" v-model = "userWords[pos]"/>
+        <input class = "cell" id = "right" v-else-if = "letterColor[pos] == 'G'" v-model = "userWords[pos]"/>
+        <input class = "cell" id = "misplaced" v-else-if = "letterColor[pos] == 'Y'" v-model = "userWords[pos]"/>
 
     </p>
   </div>
   <div class = "buttons">
     <button @click="newGame">New Game</button>
     <button @click="checkAnswer">Check Answer</button>
+    <h v-if = "congrats"> Congrats </h>
     <!-- <button @click="addOneWord">Check</button> -->
   </div>
 </template>
