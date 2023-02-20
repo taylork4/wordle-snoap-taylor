@@ -3,7 +3,7 @@ import HelloWordle from './components/HelloWordle.vue'
 </script>
 
 <template>
-  <h1>Welcome</h1>
+  <h1>Wordle</h1>
   <HelloWordle />
 </template>
 
