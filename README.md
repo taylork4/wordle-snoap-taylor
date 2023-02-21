@@ -1,27 +1,7 @@
-# Launch Local Server
+# Additional Notes
 
-```bash
-npm run dev
-```
-
-Then open `localhost:XXXX` from your browser. The default port XXXX is 5173, but it may be different on your system.
-
-
-# Vue 3 + TypeScript + Vite
-
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support For `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Due to the way that Cameron Snoap and Kyle Taylor worked on this assignment, it may look as though their is more commit history on one end than there is on another. This is due to multiple reasons:
+   1. As we developed our web application, we utilized the Live-share tool to work in the same environment at the same time.
+   2. During our development time, at one point one of us pushed a commit labeled 'Text boxes' that caused '760 changed files with 1,587,832 additions and 12 deletions.'  Due to the sheer massive amount of changes that occurred, we worried it would mess up the other person's coding environment (as it initially did to Cameron. It took him a bit of time to get things working once again and we figured it would be safer to continue to push from Kyle's development enviroment). For this reason, most pushes appear to have came from Kyle, when in reality, our commit history was very well balanced.
+   3. In the name of some commits, the person who contributed is listed in the commit (Not every one of them, but some of more important logical implementations).
+   
