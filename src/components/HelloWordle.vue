@@ -1,7 +1,9 @@
 
 <script setup lang="ts">
+/*--------------------------------------------------------------------------------------------
+  Imports and variables
+-------------------------------------------------------------------*/
 import { ref, defineProps, computed, withDefaults, Ref } from "vue"
-const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
@@ -10,33 +12,42 @@ type TimerProp = {
   startLabel: string,
   faceColor: string
 }
-const props = withDefaults(defineProps<TimerProp>(),
-  {
+
+const props = withDefaults(defineProps<TimerProp>(), {
     updateInterval: 1000,
     startLabel: "Start",
     faceColor: "transparent"
-  })
-const seconds = ref(0)
-const minutes = ref(0)
-let myTimer: Ref<number | null> = ref(null)
+});
 
-const num = ref(1) //timer
+const seconds = ref(0);
+const minutes = ref(0);
+
 let checks: number = 0;
 let congrats: boolean = false;
 let gameover: boolean = false;
-let secretWord: string
-
-
-secretWord = words[Math.floor(Math.random() * words.length)];
-
-//makes sure runtimer() only runs once upon loading app
+let secretWord: string = words[Math.floor(Math.random() * words.length)];
+let myTimer: Ref<number | null> = ref(null);
 let executed = false;
-if (executed == false) {
-  runTimer();
-  executed = true;
-}
 
-//starts new game, initializes secret word and other variables
+/*--------------------------------------------------------------------------------------------
+  The initTimer() method runs the timer once when the web
+  application starts up.
+-------------------------------------------------------------------*/
+function initTimer() {
+  if (executed == false) {
+    runTimer();
+    executed = true;
+  }
+}
+initTimer();
+
+/*--------------------------------------------------------------------------------------------
+  The newGame() method initializes the next Wordle game.
+    ~ The timer gets reset and restarted
+    ~ A new secret word gets set
+    ~ All cells get reset
+    ~ Game over/win conditions reset
+-------------------------------------------------------------------*/
 function newGame() {
   pauseTimer();
   runTimer();
@@ -54,46 +65,56 @@ function newGame() {
   }
 }
 
-//word matching algorithm with built in checkings for double letters
+/*--------------------------------------------------------------------------------------------
+  The checkAnswer() method is a word matching algorithm with built-in checks for
+  duplicate letters.
+-------------------------------------------------------------------*/
 function checkAnswer() {
   // const secretWord = "dolly" //test word
   const cellLoc = 5 * checks;
   let index = -1;
   let tempArray: Array<string> = [];
 
+  // Initializes the temporary array with the secret word separated by each individual character
   for (let i = 0; i < 5; i++) {
+    // When a blank space exists in row, the user will not be able to check their results
     if (userWords.value[i + cellLoc] == "") {
       return;
     }
     tempArray.push(secretWord.charAt(i));
   }
+
   for (let i = 0; i < 5; i++) {
-    //logic to check if there is a correct letter in the correct spot
+    // Checks if there is a correct letter in the correct location
     if (userWords.value[i + cellLoc].toLowerCase() == secretWord.charAt(i) && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
-      letterColor.value[i + cellLoc] = "G" //correct letter in correct location
-      //Logic to check for duplicate letters in a word
+      letterColor.value[i + cellLoc] = "G" // Correct letter, correct location
+      // Checks for duplicate letters in a word
       for (let j = 0; j < 5; j++) {
         if (tempArray[j] == userWords.value[i + cellLoc].toLowerCase()) {
           tempArray.splice(j, 1);
           break;
         }
       }
-      //logic to check if there is a correct letter in the wrong spot
+    // Checks if there is a correct letter in the wrong location
     } else if (secretWord.charAt(i) != userWords.value[i + cellLoc] && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
-      letterColor.value[i + cellLoc] = "Y" //correct letter wrong spot
-      //Logic to check for duplicate letters in a word
+      letterColor.value[i + cellLoc] = "Y" // Correct letter, wrong location
+      // Checks for duplicate letters in a word
       for (let j = 0; j < 5; j++) {
         if (tempArray[j] == userWords.value[i + cellLoc].toLowerCase()) {
           tempArray.splice(j, 1);
           break;
         }
       }
-      //sets color for wrong letter
+    // Sets color of cell with the wrong letter
     } else {
-      letterColor.value[i + cellLoc] = "B" //wrong letter
+      letterColor.value[i + cellLoc] = "B"; // Wrong letter
     }
   }
-  checkWin()
+  
+  // Checks if player won 
+  checkWin();
+
+  // After 6 guesses, the player loses
   checks += 1;
   if (checks == 6 && !congrats) {
     gameover = true;
@@ -101,31 +122,44 @@ function checkAnswer() {
   }
 }
 
-//check win method to see if the user got the answer before using all guesses
+/*--------------------------------------------------------------------------------------------
+  The checkWin() method verifies if the user got the correct answer
+  before using up all of the guesses
+-------------------------------------------------------------------*/
 function checkWin() {
   let numFound = 0;
+  // Checks grid to see if player has won yet.
   for (let i = 0; i < 30; i++) {
     if (letterColor.value[i] == "G") {
       numFound++;
     }
+    // Player wins when five letters in a row are correct.
     if (numFound == 5) {
       win();
+    // Checks next row
     } else if ((i + 1) % 5 == 0) {
       numFound = 0;
     }
   }
 }
 
-//sets win condition to true and pauses timer
+/*--------------------------------------------------------------------------------------------
+  The win() method allows congratulations screen to display and
+  pauses timer.
+-------------------------------------------------------------------*/
 function win() {
   congrats = true;
   pauseTimer();
 }
 
-//functions for timer, by Professor Dulimarta
+/********************************************************************************
+  Functions for timer:
+    ~ Credit: Professor Dulimarta
+***************************************************************/
 function twoDigitSeconds() {
   return seconds.value.toLocaleString('en-US', { minimumIntegerDigits: 2 })
 }
+
 function updateTime() {
   seconds.value++;
   if (seconds.value === 60) {
@@ -135,11 +169,11 @@ function updateTime() {
 }
 
 function runTimer() {
-  // Update the time once every second (1000 milliseconds)
+  // Updates the time once every second (1000 milliseconds)
   myTimer.value = setInterval(updateTime, props.updateInterval)
 }
 
-// pauseTimer();
+
 function pauseTimer() {
   if (myTimer.value !== null) {
     clearInterval(myTimer.value)
@@ -152,7 +186,7 @@ const customStyle = computed(() => {
     backgroundColor: props.faceColor,
   }
 })
-
+/* End of Professor Dulimarta's logic */
 </script>
 
 <template>
@@ -263,13 +297,10 @@ const customStyle = computed(() => {
  }
 
  .buttons {
-   /* width: auto; */
    display: flex;
    align-items: center;
    justify-content: center;
    grid-gap: 8px;
-   /* display: grid-template-rows; */
-   /* padding: 20px; */
  }
 
  #timer {
