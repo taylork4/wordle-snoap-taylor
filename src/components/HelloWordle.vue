@@ -1,25 +1,25 @@
 
 <script setup lang="ts">
-import {ref, defineProps, computed, withDefaults, Ref} from "vue"
+import { ref, defineProps, computed, withDefaults, Ref } from "vue"
 const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
 type TimerProp = {
-      updateInterval: number,
-      startLabel: string,
-      faceColor: string
-    }
-    const props = withDefaults(defineProps<TimerProp>(),
-        {
-           updateInterval: 1000,
-           startLabel: "Start",
-           faceColor: "transparent"
-        })
-    const seconds = ref(0)
-    const minutes = ref(0)
-    let myTimer: Ref<number | null> = ref(null)
-    
+  updateInterval: number,
+  startLabel: string,
+  faceColor: string
+}
+const props = withDefaults(defineProps<TimerProp>(),
+  {
+    updateInterval: 1000,
+    startLabel: "Start",
+    faceColor: "transparent"
+  })
+const seconds = ref(0)
+const minutes = ref(0)
+let myTimer: Ref<number | null> = ref(null)
+
 const num = ref(1) //timer
 let checks: number = 0;
 let congrats: boolean = false;
@@ -29,12 +29,14 @@ let secretWord: string
 
 secretWord = words[Math.floor(Math.random() * words.length)];
 
+//makes sure runtimer() only runs once upon loading app
 let executed = false;
-if (executed == false){
+if (executed == false) {
   runTimer();
   executed = true;
 }
 
+//starts new game, initializes secret word and other variables
 function newGame() {
   pauseTimer();
   runTimer();
@@ -52,7 +54,7 @@ function newGame() {
   }
 }
 
-
+//word matching algorithm with built in checkings for double letters
 function checkAnswer() {
   // const secretWord = "dolly" //test word
   const cellLoc = 5 * checks;
@@ -66,6 +68,7 @@ function checkAnswer() {
     tempArray.push(secretWord.charAt(i));
   }
   for (let i = 0; i < 5; i++) {
+    //logic to check if there is a correct letter in the correct spot
     if (userWords.value[i + cellLoc].toLowerCase() == secretWord.charAt(i) && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
       letterColor.value[i + cellLoc] = "G" //correct letter in correct location
       //Logic to check for duplicate letters in a word
@@ -75,6 +78,7 @@ function checkAnswer() {
           break;
         }
       }
+      //logic to check if there is a correct letter in the wrong spot
     } else if (secretWord.charAt(i) != userWords.value[i + cellLoc] && tempArray.includes(userWords.value[i + cellLoc].toLowerCase())) {
       letterColor.value[i + cellLoc] = "Y" //correct letter wrong spot
       //Logic to check for duplicate letters in a word
@@ -84,11 +88,11 @@ function checkAnswer() {
           break;
         }
       }
+      //sets color for wrong letter
     } else {
       letterColor.value[i + cellLoc] = "B" //wrong letter
     }
   }
-
   checkWin()
   checks += 1;
   if (checks == 6 && !congrats) {
@@ -97,7 +101,7 @@ function checkAnswer() {
   }
 }
 
-
+//check win method to see if the user got the answer before using all guesses
 function checkWin() {
   let numFound = 0;
   for (let i = 0; i < 30; i++) {
@@ -112,40 +116,42 @@ function checkWin() {
   }
 }
 
+//sets win condition to true and pauses timer
 function win() {
   congrats = true;
   pauseTimer();
 }
 
+//functions for timer, by Professor Dulimarta
 function twoDigitSeconds() {
-      return seconds.value.toLocaleString('en-US', { minimumIntegerDigits: 2})
-    }
-    function updateTime() {
-      seconds.value++;
-      if (seconds.value === 60) {
-        minutes.value++
-        seconds.value = 0
-      }
-    }
-  
-    function runTimer() {
-      // Update the time once every second (1000 milliseconds)
-      myTimer.value = setInterval(updateTime, props.updateInterval)
-    }
+  return seconds.value.toLocaleString('en-US', { minimumIntegerDigits: 2 })
+}
+function updateTime() {
+  seconds.value++;
+  if (seconds.value === 60) {
+    minutes.value++
+    seconds.value = 0
+  }
+}
 
-    // pauseTimer();
-    function pauseTimer() {
-      if (myTimer.value !== null) {
-         clearInterval(myTimer.value)
-         myTimer.value = null
-      }
-    }
-    
-    const customStyle = computed(() => {
-      return {
-        backgroundColor: props.faceColor,
-      }
-    })
+function runTimer() {
+  // Update the time once every second (1000 milliseconds)
+  myTimer.value = setInterval(updateTime, props.updateInterval)
+}
+
+// pauseTimer();
+function pauseTimer() {
+  if (myTimer.value !== null) {
+    clearInterval(myTimer.value)
+    myTimer.value = null
+  }
+}
+
+const customStyle = computed(() => {
+  return {
+    backgroundColor: props.faceColor,
+  }
+})
 
 </script>
 
@@ -161,11 +167,11 @@ function twoDigitSeconds() {
     </div>
   </h>
   <p>
-    <h v-if="congrats" style = "color: black;">
+    <h v-if="congrats" style="color: black;">
       <h1> 🎊 Congratulations! You Win! 🎊 </h1>
       <h2> Tap the 'New Game' button to play again! </h2>
     </h>
-    <h v-else-if="gameover" style = "color: black;">
+    <h v-else-if="gameover" style="color: black;">
       <h1> 😔 Game Over! No more guesses left! 😔 </h1>
       <h2> The word was '{{ secretWord }}' </h2>
       <h2> Tap the 'New Game' button to play again! </h2>
@@ -174,7 +180,7 @@ function twoDigitSeconds() {
   <div id="timers">
     <div id="timer" :style="customStyle">
       <div id="timedisplay">
-        {{minutes}}:{{twoDigitSeconds()}}
+        {{ minutes }}:{{ twoDigitSeconds() }}
       </div>
     </div>
   </div>
@@ -184,8 +190,8 @@ function twoDigitSeconds() {
     <button v-if="!congrats && !gameover" @click="checkAnswer"> Check Answer </button>
   </div>
   <br>
-  <div class = "report">
-    <h style = "font-size: 100px;"> <b>Report:</b> </h>
+  <div class="report">
+    <h style="font-size: 100px;"> <b>Report:</b> </h>
     <h5>
       Our word matching function first checks that the user has entered a
       complete five-letter word. Then it creates a temporary array with the
@@ -235,13 +241,13 @@ function twoDigitSeconds() {
    color: black;
    background-color: white;
  }
- 
+
  .report {
-  background-color: darkseagreen;
-  padding: 7px;
-  font-size: 20px;
-  border: 5px dashed black;
-  color: black;
+   background-color: darkseagreen;
+   padding: 7px;
+   font-size: 20px;
+   border: 5px dashed black;
+   color: black;
  }
 
  #wrong {
@@ -265,17 +271,18 @@ function twoDigitSeconds() {
    /* display: grid-template-rows; */
    /* padding: 20px; */
  }
- 
+
  #timer {
-      display: inline-block;
-      border: 5px solid brown;
-      border-radius: 8px;
-      width: 120px;
-      text-align:center;
-      padding-bottom: 3px;
-      color: black;
-    }
-    #timedisplay {
-      font-size: 280%;
-    }
+   display: inline-block;
+   border: 5px solid brown;
+   border-radius: 8px;
+   width: 120px;
+   text-align: center;
+   padding-bottom: 3px;
+   color: black;
+ }
+
+ #timedisplay {
+   font-size: 280%;
+ }
 </style>
