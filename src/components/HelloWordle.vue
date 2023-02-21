@@ -1,7 +1,6 @@
 
 <script setup lang="ts">
 import {ref, defineProps, computed, withDefaults, Ref} from "vue"
-
 const gameName = ref("SnoTay Wordle")
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
@@ -29,8 +28,16 @@ let secretWord: string
 
 
 secretWord = words[Math.floor(Math.random() * words.length)];
-runTimer();
+
+let executed = false;
+if (executed == false){
+  runTimer();
+  executed = true;
+}
+
 function newGame() {
+  pauseTimer();
+  runTimer();
   secretWord = words[Math.floor(Math.random() * words.length)];
   congrats = false;
   gameover = false;
@@ -44,6 +51,7 @@ function newGame() {
     letterColor.value.push("");
   }
 }
+
 
 function checkAnswer() {
   // const secretWord = "dolly" //test word
