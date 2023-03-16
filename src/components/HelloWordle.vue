@@ -228,7 +228,7 @@ function updateTime() {
 
 function runTimer() {
   // Updates the time once every second (1000 milliseconds)
-  myTimer.value = setInterval(updateTime, props.updateInterval)
+  (myTimer.value as any) = setInterval(updateTime, props.updateInterval)
 }
 
 
