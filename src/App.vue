@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import HelloWordle from './components/HelloWordle.vue'
-import Signup from './components/Signup.vue';
+// import Signup from './components/Signup.vue';
 </script>
 
 <template>
