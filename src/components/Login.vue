@@ -1,9 +1,9 @@
-<script setup lang = "ts">
+<script setup lang="ts">
 import { ref, Ref } from "vue";
 import {useRouter} from 'vue-router';
 // import firebase from "firebase/app";
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, UserCredential, sendEmailVerification } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
 
 //FIREBASE STUFF
 /******************************************************************************************************/
@@ -26,44 +26,30 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 const router = useRouter();
 
-
-//example
 const email = ref('');
 const password = ref('');
-
-    const submit = () => {
-        createUserWithEmailAndPassword(auth, email.value, password.value)
+  const login = () => {
+        signInWithEmailAndPassword(auth, email.value, password.value)
         .then((cred: UserCredential) => {
-            sendEmailVerification(cred.user);
             console.log("Verification email has been sent to", cred.user?.email);
-            // router.push('/HelloWordle')
-            auth.signOut();
+            console.log('Successfully logged in!');
+            router.push('/HelloWordle')
         })
             .catch((err: any) => {
             console.error("Oops", err);
         });
     };
-
-
 </script>
 
 <template>
-    <h1>Create an Account</h1>
-    <p><input type="text" placeholder="Email" v-model="email" /></p>
-    <p><input type="password" placeholder="Password" v-model="password" /></p>
-    <p><button @click="submit">Submit</button></p>
-    <router-view />
-  </template>
-
-<style scoped>
- .buttons {
-   display: flex;
-   align-items: center;
-   justify-content: right;
-   grid-gap: 8px;
- }
-</style>
+  <h1>Login to Your Account</h1>
+  <p><input type="text" placeholder="Email" v-model="email" /></p>
+  <p><input type="password" placeholder="Password" v-model="password" /></p>
+  <p><button @click="login">Login</button></p>
+  <router-view />
+</template>

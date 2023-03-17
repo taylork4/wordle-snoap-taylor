@@ -8,6 +8,7 @@
     <router-link to="/"> Home </router-link> | 
     <router-link to="/HelloWordle"> Game </router-link> |
     <router-link to="/SignUp"> Sign Up </router-link>
+    <router-link to="/Login"> Login </router-link>
   </nav>
   <div v-if="$route.path === '/'">
     <h1 style="color: darkblue; font-size: 50px;">SnoTay Wordle</h1>
