@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, Ref } from "vue";
-import {useRouter} from 'vue-router';
-// import firebase from "firebase/app";
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
+  import { ref, Ref } from "vue";
+  import {useRouter} from 'vue-router';
+  // import firebase from "firebase/app";
+
+  import { initializeApp } from "firebase/app";
+  import { getAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
 
 //FIREBASE STUFF
 /******************************************************************************************************/
@@ -30,6 +31,8 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 const router = useRouter();
+let signedUp = false;
+
 
 const email = ref('');
 const password = ref('');
@@ -38,18 +41,24 @@ const password = ref('');
         .then((cred: UserCredential) => {
             console.log("Verification email has been sent to", cred.user?.email);
             console.log('Successfully logged in!');
-            router.push('/HelloWordle')
+            signedUp = true;
+            router.push({
+              name: 'HelloWordle',
+              query: {email: cred.user?.email}
+            });
         })
             .catch((err: any) => {
             console.error("Oops", err);
         });
     };
+    
 </script>
 
 <template>
   <h1>Login to Your Account</h1>
   <p><input type="text" placeholder="Email" v-model="email" /></p>
   <p><input type="password" placeholder="Password" v-model="password" /></p>
-  <p><button @click="login">Login</button></p>
+  <p><button :disabled = "signedUp" @click="login">Login</button></p>
+  <h v-if="signedUp" style="color: black;"> {{email}} </h>
   <router-view />
 </template>

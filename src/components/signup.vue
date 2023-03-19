@@ -40,8 +40,11 @@ const password = ref('');
         .then((cred: UserCredential) => {
             sendEmailVerification(cred.user);
             console.log("Verification email has been sent to", cred.user?.email);
-            // router.push('/HelloWordle')
-            auth.signOut();
+            router.push({
+              name: 'Login',
+              query: {email: cred.user?.email}
+            });
+            // auth.signOut();
         })
             .catch((err: any) => {
             console.error("Oops", err);
@@ -56,6 +59,8 @@ const password = ref('');
     <p><input type="text" placeholder="Email" v-model="email" /></p>
     <p><input type="password" placeholder="Password" v-model="password" /></p>
     <p><button @click="submit">Submit</button></p>
+    
+    
     <router-view />
   </template>
 

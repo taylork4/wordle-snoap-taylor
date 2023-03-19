@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 /*--------------------------------------------------------------------------------------------
   Imports and variables
@@ -7,7 +6,15 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, defineProps, computed, withDefaults, Ref } from "vue"
+import { ref, defineProps, computed, withDefaults, Ref, defineComponent } from "vue"
+import { useRoute, RouteLocationNormalized } from 'vue-router';
+
+// define the type for the current route object
+interface CurrentRoute extends RouteLocationNormalized {
+  query: {
+    email?: string;
+  };
+}
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
@@ -16,6 +23,9 @@ type TimerProp = {
   startLabel: string,
   faceColor: string
 }
+const route = useRoute() as CurrentRoute;
+const email = route.query.email;
+
 
 //FIREBASE STUFF
 /******************************************************************************************************/
@@ -220,6 +230,7 @@ const customStyle = computed(() => {
 </script>
 
 <template>
+  <h > {{ email }} </h>
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
