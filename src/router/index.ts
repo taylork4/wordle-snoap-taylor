@@ -5,7 +5,7 @@ const router = createRouter({
     {
       name: "Home",
       path: "/",
-      component: () => import("."),
+      component: () => import(".")
     },
     {
       name: "HelloWordle",

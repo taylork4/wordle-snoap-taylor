@@ -230,7 +230,6 @@ const customStyle = computed(() => {
 </script>
 
 <template>
-  <h > {{ email }} </h>
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
