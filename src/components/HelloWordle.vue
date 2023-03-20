@@ -2,7 +2,6 @@
 /*--------------------------------------------------------------------------------------------
   Imports and variables
 -------------------------------------------------------------------*/
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -28,6 +27,8 @@ type TimerProp = {
 }
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
+
+
 
 const props = withDefaults(defineProps<TimerProp>(), {
     updateInterval: 1000,
