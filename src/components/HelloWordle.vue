@@ -8,6 +8,9 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, defineProps, computed, withDefaults, Ref, defineComponent } from "vue"
 import { useRoute, RouteLocationNormalized } from 'vue-router';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+import {db, auth} from '../firebase/init.js'
 
 // define the type for the current route object
 interface CurrentRoute extends RouteLocationNormalized {
@@ -25,33 +28,6 @@ type TimerProp = {
 }
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
-
-
-//FIREBASE STUFF
-/******************************************************************************************************/
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAC0VT8m3ZspBjn-5gcXp1Rck1hq_c0lu4",
-  authDomain: "wordle-snoap-taylor.firebaseapp.com",
-  projectId: "wordle-snoap-taylor",
-  storageBucket: "wordle-snoap-taylor.appspot.com",
-  messagingSenderId: "1064048946619",
-  appId: "1:1064048946619:web:2d319ef9b72845c96de89e",
-  measurementId: "G-1XQ3ERZCYV"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
-
-
-/********************************************************************************************************/
 
 const props = withDefaults(defineProps<TimerProp>(), {
     updateInterval: 1000,
@@ -299,6 +275,7 @@ const customStyle = computed(() => {
 </template>  
 
 <style scoped>
+/* @import url('../style.css'); */
 #grid {
    display: inline-grid;
    grid-template-columns: repeat(5, 1fr);
