@@ -2,6 +2,17 @@ import {initializeApp} from 'firebase/app'
 import {getFirestore} from 'firebase/firestore'
 import { getAuth, User } from "firebase/auth";
 
+// export async function writeFire(coll: DocumentReference, data: any) {
+//   try {
+//   //  await setDoc(coll, data, { merge: false });
+//   // const docRef = 
+//   // await addDoc(collection(coll, "user"), data)
+//    console.log("Successful addition!");
+//   } catch (error) {
+//     console.log(`I got an error! ${error}`);
+//   }
+// }
+
 const firebaseConfig = {
     apiKey: "AIzaSyAC0VT8m3ZspBjn-5gcXp1Rck1hq_c0lu4",
     authDomain: "wordle-snoap-taylor.firebaseapp.com",

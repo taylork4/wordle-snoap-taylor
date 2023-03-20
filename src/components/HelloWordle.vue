@@ -3,15 +3,12 @@
   Imports and variables
 -------------------------------------------------------------------*/
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, defineProps, computed, withDefaults, Ref, defineComponent } from "vue"
+import { User } from "firebase/auth";
+import { ref, defineProps, computed, withDefaults, Ref } from "vue"
 import { useRoute, RouteLocationNormalized } from 'vue-router';
-import * as firebase from 'firebase/app';
 import 'firebase/firestore';
-import {CollectionReference, collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
-import {db, auth} from '../firebase/init.js'
-
+import {collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
+import {db, auth } from '../firebase/init.js'
 
 // define the type for the current route object
 interface CurrentRoute extends RouteLocationNormalized {
@@ -19,6 +16,19 @@ interface CurrentRoute extends RouteLocationNormalized {
     email?: string;
   };
 }
+const route = useRoute() as CurrentRoute;
+const email = route.query.email;
+const userUid = ref('');
+userUid.value = '';
+auth.onAuthStateChanged(function(user: User | null) {
+      if (user) {
+        userUid.value = user.uid; // store the user UID in the ref
+        console.log(`User UID (in method): ${userUid.value}`);      
+      } else {
+        userUid.value = ''; // clear the user UID ref
+      }
+  })
+
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
@@ -27,43 +37,6 @@ type TimerProp = {
   startLabel: string,
   faceColor: string
 }
-const route = useRoute() as CurrentRoute;
-const email = route.query.email;
-const docData: {
-    attempts: number;
-    date: string;
-    gameNum: number;
-    gameWin: string;
-    time: number;
-    word: string;
-  }  = {
-  attempts: 0,
-  date: '',
-  gameNum: 0,
-  gameWin: '',
-  time: 0,
-  word: ''
-};
-
-const ww: {
-  lst: Array<string>;
-} = {
-  lst: words
-}
-
-const gs = doc(db, 'gameStats/user')
-const wordsColl = doc(db, 'wordleWords/words')
-async function writeGs(coll: DocumentReference, data: any) {
-  try {
-   await setDoc(coll, data);
-   console.log("Successful addition!");
-  } catch (error) {
-    console.log(`I got an error! ${error}`);
-  }
-}
-
-writeGs(wordsColl, ww);
-
 
 const props = withDefaults(defineProps<TimerProp>(), {
     updateInterval: 1000,
@@ -80,6 +53,58 @@ let gameover: boolean = false;
 let secretWord: string = words[Math.floor(Math.random() * words.length)];
 let myTimer: Ref<number | null> = ref(null);
 let executed = false;
+
+/* Firebase passing stuff */
+const gs = doc(db, 'gameStats/user')
+const wordsColl = doc(db, 'wordleWords/words')
+let docData: {
+    attempts: number;
+    date: string;
+    gameNum: number;
+    gameWin: string;
+    time: number;
+    word: string;
+  }
+
+const ww: {
+  lst: Array<string>;
+} = {
+  lst: words
+}
+
+
+/* Updates existing document */
+async function setFire(coll: DocumentReference, data: any) {
+  try {
+  await setDoc(coll, data);
+  // await addDoc(collection(coll, email as string), data)
+   console.log("Successful addition!");
+  } catch (error) {
+    console.log(`I got an error! ${error}`);
+  }
+}
+
+/* Adds a new document */
+async function addFire(coll: DocumentReference, data: any) {
+  try {
+  await addDoc(collection(coll, "user"), data)
+   console.log("Successful addition!");
+  } catch (error) {
+    console.log(`I got an error! ${error}`);
+  }
+}
+
+/* Unfinished method */
+// async function getFire(coll: DocumentReference, data: any) {
+//   try {
+//     // await getDoc(coll, "user", )
+//    console.log("Successful addition!");
+//   } catch (error) {
+//     console.log(`I got an error! ${error}`);
+//   }
+// }
+
+// addFire(gs, emailObj);
 
 /*--------------------------------------------------------------------------------------------
   The initTimer() method runs the timer once when the web
@@ -163,12 +188,23 @@ function checkAnswer() {
     }
   }
   
+  // After 6 guesses, the player loses
+  checks += 1;
+
   // Checks if player won 
   checkWin();
 
-  // After 6 guesses, the player loses
-  checks += 1;
   if (checks == 6 && !congrats) {
+      docData = {
+        attempts: checks,
+        date: '',
+        gameNum: 0,
+        gameWin: 'Lost',
+        time: myTimer.value as number,
+        word: secretWord
+      };
+
+    addFire(gs, docData);
     gameover = true;
     pauseTimer();
   }
@@ -200,6 +236,15 @@ function checkWin() {
   pauses timer.
 -------------------------------------------------------------------*/
 function win() {
+  docData = {
+    attempts: checks,
+    date: '',
+    gameNum: 0,
+    gameWin: 'Won',
+    time: myTimer.value as number,
+    word: secretWord
+  };
+  addFire(gs, docData);
   congrats = true;
   pauseTimer();
 }

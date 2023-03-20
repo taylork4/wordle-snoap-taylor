@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import 'firebase/firestore';
-import {CollectionReference, collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
-import {db, auth} from '../firebase/init.js'
 
 const router = createRouter({
   history: createWebHistory('/'),
