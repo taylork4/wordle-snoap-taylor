@@ -32,6 +32,8 @@ auth.onAuthStateChanged(function(user: User | null) {
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
+let userGuesses: string[] = ["", "", "", "", "", ""];
+
 type TimerProp = {
   updateInterval: number,
   startLabel: string,
@@ -53,17 +55,19 @@ let gameover: boolean = false;
 let secretWord: string = words[Math.floor(Math.random() * words.length)];
 let myTimer: Ref<number | null> = ref(null);
 let executed = false;
+let cts = false;
 
 /* Firebase passing stuff */
 const gs = doc(db, 'gameStats/user')
 const wordsColl = doc(db, 'wordleWords/words')
 let docData: {
-    attempts: number;
+    // attempts: number;
     date: string;
     gameNum: number;
     gameWin: string;
     time: number;
     word: string;
+    guesses: Array<string>;
   }
 
 const ww: {
@@ -131,6 +135,7 @@ function newGame() {
   secretWord = words[Math.floor(Math.random() * words.length)];
   congrats = false;
   gameover = false;
+  cts = false;
   checks = 0;
   seconds.value = 0;
   minutes.value = 0;
@@ -196,12 +201,13 @@ function checkAnswer() {
 
   if (checks == 6 && !congrats) {
       docData = {
-        attempts: checks,
+        // attempts: checks,
         date: '',
         gameNum: 0,
         gameWin: 'Lost',
         time: myTimer.value as number,
-        word: secretWord
+        word: secretWord,
+        guesses: userGuesses
       };
 
     addFire(gs, docData);
@@ -216,6 +222,7 @@ function checkAnswer() {
 -------------------------------------------------------------------*/
 function checkWin() {
   let numFound = 0;
+  let countInst = 0;
   // Checks grid to see if player has won yet.
   for (let i = 0; i < 30; i++) {
     if (letterColor.value[i] == "G") {
@@ -223,7 +230,13 @@ function checkWin() {
     }
     // Player wins when five letters in a row are correct.
     if (numFound == 5) {
-      win();
+      countInst += 1;
+      if (cts == false) {
+        userGuesses = convertToStr(userWords.value, checks);
+        cts = true;
+        console.log(`Any console statement ${countInst}`);
+        win();
+      }
     // Checks next row
     } else if ((i + 1) % 5 == 0) {
       numFound = 0;
@@ -232,17 +245,37 @@ function checkWin() {
 }
 
 /*--------------------------------------------------------------------------------------------
+  The converToStr() method converts the array of letters to strings in an array
+-------------------------------------------------------------------*/
+function convertToStr(words: string[], g: number): string[] {
+  const sixStrings: string[] = [];
+  const nl = 6 - g;
+  for (let i = 0; i < g; i++) {
+    let str = "";
+    for (let j = 0; j < 5; j++) {
+      str += words[i * 5 + j];
+    }
+    sixStrings.push(str);
+  }
+  for (let i = 0; i < nl; i++) {
+    sixStrings.push("");
+  }
+  console.log(sixStrings);
+  return sixStrings;
+}
+/*--------------------------------------------------------------------------------------------
   The win() method allows congratulations screen to display and
   pauses timer.
 -------------------------------------------------------------------*/
 function win() {
   docData = {
-    attempts: checks,
+    // attempts: checks,
     date: '',
     gameNum: 0,
     gameWin: 'Won',
     time: myTimer.value as number,
-    word: secretWord
+    word: secretWord,
+    guesses: userGuesses
   };
   addFire(gs, docData);
   congrats = true;

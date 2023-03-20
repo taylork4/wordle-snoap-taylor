@@ -69,7 +69,7 @@ const signOut = () => {
       Cameron Snoap<br>
       Kyle Taylor
     </h4>
-    <h2> <br><br> Click <u>Sign Up</u> if you don't already have an account! </h2>
+    <h2> <br> Click <u>Sign Up</u> if you don't already have an account! </h2>
     <h2> Or, click <u>Login</u> if you do! </h2>
   </div>
   <router-view />
