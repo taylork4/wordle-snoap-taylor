@@ -9,7 +9,9 @@ import { ref, defineProps, computed, withDefaults, Ref, defineComponent } from "
 import { useRoute, RouteLocationNormalized } from 'vue-router';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import {CollectionReference, collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
 import {db, auth} from '../firebase/init.js'
+
 
 // define the type for the current route object
 interface CurrentRoute extends RouteLocationNormalized {
@@ -27,7 +29,40 @@ type TimerProp = {
 }
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
+const docData: {
+    attempts: number;
+    date: string;
+    gameNum: number;
+    gameWin: string;
+    time: number;
+    word: string;
+  }  = {
+  attempts: 0,
+  date: '',
+  gameNum: 0,
+  gameWin: '',
+  time: 0,
+  word: ''
+};
 
+const ww: {
+  lst: Array<string>;
+} = {
+  lst: words
+}
+
+const gs = doc(db, 'gameStats/user')
+const wordsColl = doc(db, 'wordleWords/words')
+async function writeGs(coll: DocumentReference, data: any) {
+  try {
+   await setDoc(coll, data);
+   console.log("Successful addition!");
+  } catch (error) {
+    console.log(`I got an error! ${error}`);
+  }
+}
+
+writeGs(wordsColl, ww);
 
 
 const props = withDefaults(defineProps<TimerProp>(), {
