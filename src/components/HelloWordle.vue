@@ -4,11 +4,14 @@
 -------------------------------------------------------------------*/
 // Import the functions you need from the SDKs you need
 import { User } from "firebase/auth";
-import { ref, defineProps, computed, withDefaults, Ref } from "vue"
+import { ref, defineProps, computed, withDefaults, Ref, watch } from "vue"
 import { useRoute, RouteLocationNormalized } from 'vue-router';
 import 'firebase/firestore';
 import {collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
 import {db, auth } from '../firebase/init.js'
+
+// import * as firebase from '../firebase/init.js'
+// import { userUid } from '../firebase/init.js'
 
 // define the type for the current route object
 interface CurrentRoute extends RouteLocationNormalized {
@@ -18,17 +21,81 @@ interface CurrentRoute extends RouteLocationNormalized {
 }
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
+// const userUid = ref('');
+// let usId = ""
+// auth.onAuthStateChanged(function(user: User | null) {
+//       if (user) {
+//         userUid.value = user.uid; // store the user UID in the ref  
+//       } else {
+//         userUid.value = ''; // clear the user UID ref
+//       }
+//   })
+//   console.log(`Out setUserId ${userUid.value}`);
 const userUid = ref('');
-userUid.value = '';
-auth.onAuthStateChanged(function(user: User | null) {
-      if (user) {
-        userUid.value = user.uid; // store the user UID in the ref
-        console.log(`User UID (in method): ${userUid.value}`);      
-      } else {
-        userUid.value = ''; // clear the user UID ref
-      }
-  })
+let usId = "";
+let newUserUid = "";
 
+async function logUserUid() {
+  await new Promise<void>((resolve) => {
+    watch(userUid, (newValue, oldValue) => {
+      console.log(`userUid changed from ${oldValue} to ${newValue}`);
+      newUserUid = newValue;
+      resolve();
+    });
+  });
+
+  console.log(`New userUid value: ${newUserUid}`);
+}
+
+function setUserId(user: User | null) {
+  if (user) {
+    userUid.value = user.uid;
+    usId = user.uid;
+  } else {
+    userUid.value = '';
+    usId = '';
+  }
+}
+
+auth.onAuthStateChanged(setUserId);
+
+console.log(`Outside setUserId ${userUid.value}`);
+console.log(`Outside usId ${usId}`);
+logUserUid();
+console.log(`New value ${newUserUid}`)
+
+// const userUid = ref('');
+// let usId = "";
+// let newUserUid = "";
+
+// watch(userUid, (newValue, oldValue) => {
+//   console.log(`userUid changed from ${oldValue} to ${newValue}`);
+//   newUserUid = newValue;
+// });
+
+// function setUserId(user: User | null) {
+//   if (user) {
+//     userUid.value = user.uid;
+//     usId = user.uid;
+//   } else {
+//     userUid.value = '';
+//     usId = '';
+//   }
+// }
+
+// auth.onAuthStateChanged(setUserId);
+
+// console.log(`Outside setUserId ${userUid.value}`);
+// console.log(`Outside usId ${usId}`);
+// console.log(`New value ${newUserUid}`)
+
+  
+  // function setUserId(u: string) {
+  //   usId = u;
+  //   console.log(`In setUserId ${usId}`);
+  // }
+          // setUserId(userUid.value)
+        // console.log(`User UID (in method): ${userUid.value}`);    
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];

@@ -1,17 +1,7 @@
 import {initializeApp} from 'firebase/app'
 import {getFirestore} from 'firebase/firestore'
-import { getAuth, User } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
-// export async function writeFire(coll: DocumentReference, data: any) {
-//   try {
-//   //  await setDoc(coll, data, { merge: false });
-//   // const docRef = 
-//   // await addDoc(collection(coll, "user"), data)
-//    console.log("Successful addition!");
-//   } catch (error) {
-//     console.log(`I got an error! ${error}`);
-//   }
-// }
 
 const firebaseConfig = {
     apiKey: "AIzaSyAC0VT8m3ZspBjn-5gcXp1Rck1hq_c0lu4",
@@ -31,6 +21,7 @@ const app = initializeApp(firebaseConfig);
 // const auth = firebase.auth();
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+// Create a reactive variable to store the user UID
 
 
 // init firestore service
