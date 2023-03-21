@@ -9,6 +9,17 @@ import { useRoute, RouteLocationNormalized } from 'vue-router';
 import 'firebase/firestore';
 import {collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
 import {db, auth } from '../firebase/init.js'
+// import { DateTime } from 'luxon';
+
+// import dayjs from 'dayjs';
+
+// const currentTime = dayjs().format('HH:mm:ss');
+// console.log(currentTime);
+
+// const test = new Date();
+
+
+// console.log(test);
 
 // import * as firebase from '../firebase/init.js'
 // import { userUid } from '../firebase/init.js'
@@ -21,6 +32,8 @@ interface CurrentRoute extends RouteLocationNormalized {
 }
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
+
+// const nowInUTC = DateTime.utc()
 // const userUid = ref('');
 // let usId = ""
 // auth.onAuthStateChanged(function(user: User | null) {
@@ -126,7 +139,7 @@ let cts = false;
 
 /* Firebase passing stuff */
 const gs = doc(db, 'gameStats/user')
-const wordsColl = doc(db, 'wordleWords/words')
+// const wordsColl = doc(db, 'wordleWords/words')
 let docData: {
     // attempts: number;
     date: string;
@@ -158,7 +171,7 @@ async function setFire(coll: DocumentReference, data: any) {
 /* Adds a new document */
 async function addFire(coll: DocumentReference, data: any) {
   try {
-  await addDoc(collection(coll, "user"), data)
+  await addDoc(collection(coll, `${newUserUid}`), data)
    console.log("Successful addition!");
   } catch (error) {
     console.log(`I got an error! ${error}`);
@@ -267,16 +280,19 @@ function checkAnswer() {
   checkWin();
 
   if (checks == 6 && !congrats) {
-      docData = {
-        // attempts: checks,
-        date: '',
-        gameNum: 0,
-        gameWin: 'Lost',
-        time: myTimer.value as number,
-        word: secretWord,
-        guesses: userGuesses
-      };
-
+    if (cts == false) {
+      userGuesses = convertToStr(userWords.value, checks);  
+      cts = true;
+    }
+    docData = {
+      date: '',
+      gameNum: 0,
+      gameWin: 'Lost',
+      time: myTimer.value as number,
+      word: secretWord,
+      guesses: userGuesses
+    };
+      
     addFire(gs, docData);
     gameover = true;
     pauseTimer();
@@ -336,7 +352,6 @@ function convertToStr(words: string[], g: number): string[] {
 -------------------------------------------------------------------*/
 function win() {
   docData = {
-    // attempts: checks,
     date: '',
     gameNum: 0,
     gameWin: 'Won',
