@@ -1,5 +1,5 @@
 <script setup lang="ts"> 
-  import { ref } from 'vue' // used for conditional rendering
+  import { ref, watch } from 'vue' // used for conditional rendering
   import { useRouter, useRoute, RouteLocationNormalized } from 'vue-router';
   import 'firebase/auth';
   import { User } from 'firebase/auth';
@@ -17,6 +17,8 @@ const route = useRoute() as CurrentRoute;
 const email = route.query.email;
 let currentUser: User | null = null;
 const userUid = ref('');
+let usId = "";
+let newUserUid = "";
 
 const isLoggedIn = ref(true)
   // runs after firebase is initialized
@@ -30,6 +32,33 @@ const isLoggedIn = ref(true)
         userUid.value = ''; // clear the user UID ref
       }
   })
+
+  
+async function logUserUid() {
+  await new Promise<void>((resolve) => {
+    watch(userUid, (newValue, oldValue) => {
+      console.log(`userUid changed from ${oldValue} to ${newValue}`);
+      newUserUid = newValue;
+      resolve();
+    });
+  });
+
+  console.log(`New userUid value: ${newUserUid}`);
+}
+
+function setUserId(user: User | null) {
+  if (user) {
+    userUid.value = user.uid;
+    usId = user.uid;
+  } else {
+    userUid.value = '';
+    usId = '';
+  }
+}
+
+auth.onAuthStateChanged(setUserId);
+logUserUid();
+console.log(`New value ${newUserUid}`)
 
 /* Allows user to sign out and sends them back to the home screen */
 const signOut = () => {
@@ -60,7 +89,8 @@ const signOut = () => {
         </span>
       </nav>
       <div class="email">
-        <h :key="$route.fullPath">{{$route.query.email}}</h>
+        <!-- <h :key="$route.fullPath">{{$route.query.email}}</h> -->
+        <h>{{ newUserUid }} </h>
       </div>
     </div>
   <div v-if="$route.path === '/'">

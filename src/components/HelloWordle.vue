@@ -7,22 +7,13 @@ import { User } from "firebase/auth";
 import { ref, defineProps, computed, withDefaults, Ref, watch } from "vue"
 import { useRoute, RouteLocationNormalized } from 'vue-router';
 import 'firebase/firestore';
-import {collection, addDoc, DocumentReference, setDoc, doc} from 'firebase/firestore';
+import {collection, addDoc, DocumentReference, DocumentSnapshot, setDoc, doc, getDoc, getDocs, CollectionReference, query, collectionGroup, QuerySnapshot, where, QueryDocumentSnapshot } from 'firebase/firestore';
 import {db, auth } from '../firebase/init.js'
-// import { DateTime } from 'luxon';
 
-// import dayjs from 'dayjs';
+const dt = new Date();
 
-// const currentTime = dayjs().format('HH:mm:ss');
-// console.log(currentTime);
+const dt_string = dt.toLocaleString();
 
-// const test = new Date();
-
-
-// console.log(test);
-
-// import * as firebase from '../firebase/init.js'
-// import { userUid } from '../firebase/init.js'
 
 // define the type for the current route object
 interface CurrentRoute extends RouteLocationNormalized {
@@ -33,20 +24,11 @@ interface CurrentRoute extends RouteLocationNormalized {
 const route = useRoute() as CurrentRoute;
 const email = route.query.email;
 
-// const nowInUTC = DateTime.utc()
-// const userUid = ref('');
-// let usId = ""
-// auth.onAuthStateChanged(function(user: User | null) {
-//       if (user) {
-//         userUid.value = user.uid; // store the user UID in the ref  
-//       } else {
-//         userUid.value = ''; // clear the user UID ref
-//       }
-//   })
-//   console.log(`Out setUserId ${userUid.value}`);
 const userUid = ref('');
 let usId = "";
 let newUserUid = "";
+let numGames: number = 0;
+let gameCount: number = 1;
 
 async function logUserUid() {
   await new Promise<void>((resolve) => {
@@ -71,11 +53,9 @@ function setUserId(user: User | null) {
 }
 
 auth.onAuthStateChanged(setUserId);
-
-console.log(`Outside setUserId ${userUid.value}`);
-console.log(`Outside usId ${usId}`);
 logUserUid();
 console.log(`New value ${newUserUid}`)
+// const userCollectionRef = doc(db, "gameStats/user", newUserUid);
 
 // const userUid = ref('');
 // let usId = "";
@@ -178,17 +158,51 @@ async function addFire(coll: DocumentReference, data: any) {
   }
 }
 
-/* Unfinished method */
-// async function getFire(coll: DocumentReference, data: any) {
-//   try {
-//     // await getDoc(coll, "user", )
-//    console.log("Successful addition!");
-//   } catch (error) {
-//     console.log(`I got an error! ${error}`);
-//   }
-// }
 
-// addFire(gs, emailObj);
+const gameStatsRef = collection(db, "gameStats");
+
+getDocs(gameStatsRef).then((gameStatsSnapshot) => {
+  const gameStatsPromises = gameStatsSnapshot.docs.map((gameStatDoc) => {
+    const newUserIdRef = collection(gameStatDoc.ref, newUserUid);
+    return getDocs(newUserIdRef).then((newUserIdSnapshot) => {
+      const newUserIdData = newUserIdSnapshot.docs.map((newUserIdDoc) => {
+        return { ...newUserIdDoc.data(), id: newUserIdDoc.id };
+      });
+      return { ...gameStatDoc.data(), id: gameStatDoc.id, newUserId: newUserIdData };
+    });
+  });
+  return Promise.all(gameStatsPromises);
+})
+.then((gameStatsData) => {
+  const newUserIdArray = gameStatsData.map((data) => data.newUserId);
+  console.log(gameStatsData);
+  if ('word' in newUserIdArray[0][0]) {
+    console.log(newUserIdArray[0][0].word); //Code to get 'word' from document.
+  }
+  console.log(newUserIdArray[0].length as number);
+  numGames = newUserIdArray[0].length as number //Code to get number of documents in subcollection (USE FOR GAME NUMBER)
+})
+.catch((err) => {
+  console.log(err.message);
+});
+/*THIS WORKS DO NOT GET RID OF ANY OF THIS*/
+// const colRef = collection(db, "gameStats")
+// // const idRef = collection(db, newUserUid)
+
+
+
+// getDocs(colRef)
+//   .then((snapshot) => {
+//     let arr: any[] = [];
+//     snapshot.docs.forEach((doc) => {
+//       arr.push({ ...doc.data(), id: doc.id })
+//     })
+
+//     console.log(arr[0]);
+// }).catch(err => {
+//   console.log(err.message)
+// })
+/*THIS WORKS DO NOT GET RID OF ANY OF THIS*/
 
 /*--------------------------------------------------------------------------------------------
   The initTimer() method runs the timer once when the web
@@ -285,13 +299,15 @@ function checkAnswer() {
       cts = true;
     }
     docData = {
-      date: '',
-      gameNum: 0,
+      date: dt_string,
+      gameNum: numGames + gameCount,
       gameWin: 'Lost',
-      time: myTimer.value as number,
+      time: (seconds.value+(minutes.value*60)),
       word: secretWord,
       guesses: userGuesses
     };
+    gameCount = gameCount + 1;
+    console.log(gameCount, " At Lose!")
       
     addFire(gs, docData);
     gameover = true;
@@ -317,7 +333,6 @@ function checkWin() {
       if (cts == false) {
         userGuesses = convertToStr(userWords.value, checks);
         cts = true;
-        console.log(`Any console statement ${countInst}`);
         win();
       }
     // Checks next row
@@ -343,7 +358,6 @@ function convertToStr(words: string[], g: number): string[] {
   for (let i = 0; i < nl; i++) {
     sixStrings.push("");
   }
-  console.log(sixStrings);
   return sixStrings;
 }
 /*--------------------------------------------------------------------------------------------
@@ -352,13 +366,15 @@ function convertToStr(words: string[], g: number): string[] {
 -------------------------------------------------------------------*/
 function win() {
   docData = {
-    date: '',
-    gameNum: 0,
+    date: dt_string,
+    gameNum: numGames + gameCount,
     gameWin: 'Won',
-    time: myTimer.value as number,
+    time: (seconds.value+(minutes.value*60)),
     word: secretWord,
     guesses: userGuesses
   };
+  gameCount += 1;
+  console.log(gameCount, " At Win!")
   addFire(gs, docData);
   congrats = true;
   pauseTimer();
