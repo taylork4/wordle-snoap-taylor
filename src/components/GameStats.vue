@@ -86,20 +86,6 @@ function assignValues(nidArr: any) {
         guesses: nidArr[0][i].guesses,
         time: nidArr[0][i].time,
         word: nidArr[0][i].word});
-      // docData =
-      // {
-      //   date: nidArr[0][i].date,
-      //   gameNum: nidArr[0][i].gameNum,
-      //   gameWin: nidArr[0][i].gameWin,
-      //   guesses: nidArr[0][i].guesses,
-      //   time: nidArr[0][i].time,
-      //   word: nidArr[0][i].word
-      // }
-      // console.log(nidArr[0][i].gameNum); //Code to get 'word' from document.
-      // console.log(nidArr[0][i].gameWin); //Code to get 'word' from document.
-      // console.log(nidArr[0][i].guesses); //Code to get 'word' from document.
-      // console.log(nidArr[0][i].time); //Code to get 'word' from document.
-      // console.log(nidArr[0][i].word); //Code to get 'word' from document.
     }
     const tArea4 = document.getElementById("area4");
     const tbl = document.createElement("table");
@@ -162,13 +148,6 @@ function assignValues(nidArr: any) {
   }
 } 
 
-// function delay(ms: number) {
-//     return new Promise( resolve => setTimeout(resolve, ms) );
-// }
-// await delay(1000);
-// if (wordStr !== null) {
-//   console.log(wordStr);
-// }
 </script>
 
 <template>
