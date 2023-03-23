@@ -17,8 +17,10 @@ const route = useRoute() as CurrentRoute;
 const email = route.query.email;
 let currentUser: User | null = null;
 const userUid = ref('');
+const userEmail = ref('');
 let usId = "";
 let newUserUid = "";
+let newUserEmail = "";
 
 const isLoggedIn = ref(true)
   // runs after firebase is initialized
@@ -34,27 +36,41 @@ const isLoggedIn = ref(true)
   })
 
   
-async function logUserUid() {
+  async function logUserUid() {
   await new Promise<void>((resolve) => {
-    watch(userUid, (newValue, oldValue) => {
-      console.log(`userUid changed from ${oldValue} to ${newValue}`);
-      newUserUid = newValue;
+    watch(userEmail, (newValue, oldValue) => {
+      console.log(`userEmail changed from ${oldValue} to ${newValue}`);
+      newUserEmail = newValue;
       resolve();
     });
   });
 
-  console.log(`New userUid value: ${newUserUid}`);
+  console.log(`New userEmail value: ${newUserEmail}`);
 }
+
 
 function setUserId(user: User | null) {
   if (user) {
     userUid.value = user.uid;
+    userEmail.value = user.email || '';
     usId = user.uid;
   } else {
     userUid.value = '';
+    userEmail.value = '';
     usId = '';
   }
 }
+
+
+// function setUserId(user: User | null) {
+//   if (user) {
+//     userUid.value = user.uid;
+//     usId = user.uid;
+//   } else {
+//     userUid.value = '';
+//     usId = '';
+//   }
+// }
 
 auth.onAuthStateChanged(setUserId);
 logUserUid();
@@ -90,7 +106,7 @@ const signOut = () => {
       </nav>
       <div class="email">
         <!-- <h :key="$route.fullPath">{{$route.query.email}}</h> -->
-        <h>{{ newUserUid }} </h>
+        <h>{{ newUserEmail }} </h>
       </div>
     </div>
   <div v-if="$route.path === '/'">
@@ -121,4 +137,49 @@ const signOut = () => {
 .email {
   margin-left: auto;
 }
+.buttons {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   grid-gap: 8px;
+ }
+
+ table {
+    table-layout: auto; 
+    width: 100%;
+    border: 4px solid black;
+    border-collapse: collapse;
+    color: black;
+}
+
+th, td {
+    border: 2px solid black;
+    border-style: solid;
+    color: black;
+}
+
+th {
+    font-family: 'Georgia';
+    font-size: large;
+    background-color: rgb(48, 160, 251);
+    color: black;
+}
+
+tr {
+    font-family: 'Perpetua';
+    font-size: medium;
+    color: black;
+}
+
+tr:hover td {
+    background-color: rgb(98, 242, 175);
+} 
+
+tr:nth-child(even) {
+    background-color: rgb(228, 228, 228);
+}
+
+tr:nth-child(odd) {
+    background-color: rgb(158, 226, 255);
+} 
 </style>

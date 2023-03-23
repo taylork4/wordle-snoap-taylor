@@ -8,7 +8,7 @@ import { ref, defineProps, computed, withDefaults, Ref, watch } from "vue"
 import { useRoute, RouteLocationNormalized } from 'vue-router';
 import 'firebase/firestore';
 import {collection, addDoc, DocumentReference, DocumentSnapshot, setDoc, doc, getDoc, getDocs, CollectionReference, query, collectionGroup, QuerySnapshot, where, QueryDocumentSnapshot } from 'firebase/firestore';
-import {db, auth } from '../firebase/init.js'
+import { db, auth } from '../firebase/init.js'
 
 const dt = new Date();
 
@@ -55,40 +55,7 @@ function setUserId(user: User | null) {
 auth.onAuthStateChanged(setUserId);
 logUserUid();
 console.log(`New value ${newUserUid}`)
-// const userCollectionRef = doc(db, "gameStats/user", newUserUid);
-
-// const userUid = ref('');
-// let usId = "";
-// let newUserUid = "";
-
-// watch(userUid, (newValue, oldValue) => {
-//   console.log(`userUid changed from ${oldValue} to ${newValue}`);
-//   newUserUid = newValue;
-// });
-
-// function setUserId(user: User | null) {
-//   if (user) {
-//     userUid.value = user.uid;
-//     usId = user.uid;
-//   } else {
-//     userUid.value = '';
-//     usId = '';
-//   }
-// }
-
-// auth.onAuthStateChanged(setUserId);
-
-// console.log(`Outside setUserId ${userUid.value}`);
-// console.log(`Outside usId ${usId}`);
-// console.log(`New value ${newUserUid}`)
-
-  
-  // function setUserId(u: string) {
-  //   usId = u;
-  //   console.log(`In setUserId ${usId}`);
-  // }
-          // setUserId(userUid.value)
-        // console.log(`User UID (in method): ${userUid.value}`);    
+ 
 const userWords: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const letterColor: Ref<string[]> = ref(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
 const words: string[] = ['amber', 'brave', 'catch', 'dream', 'earth', 'flair', 'gloom', 'happy', 'image', 'juice', 'knack', 'latch', 'birth', 'notch', 'olive', 'peace', 'quirk', 'route', 'shrug', 'toast'];
@@ -121,7 +88,6 @@ let cts = false;
 const gs = doc(db, 'gameStats/user')
 // const wordsColl = doc(db, 'wordleWords/words')
 let docData: {
-    // attempts: number;
     date: string;
     gameNum: number;
     gameWin: string;
@@ -421,7 +387,7 @@ const customStyle = computed(() => {
   <h>
     <div id="grid">
       <p v-for="(w, pos) in userWords" v-bind:key="pos">
-        <input class="cell" v-if="letterColor[pos] == ''" v-model="userWords[pos]" />
+        <input class="cell" v-if="letterColor[pos] == '' " v-model="userWords[pos]" />
         <input class="cell" id="wrong" v-else-if="letterColor[pos] == 'B'" v-model="userWords[pos]" />
         <input class="cell" id="right" v-else-if="letterColor[pos] == 'G'" v-model="userWords[pos]" />
         <input class="cell" id="misplaced" v-else-if="letterColor[pos] == 'Y'" v-model="userWords[pos]" />
